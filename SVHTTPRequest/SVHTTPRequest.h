@@ -58,4 +58,6 @@ typedef NSUInteger SVHTTPRequestMethod;
 
 - (void)signRequestWithUsername:(NSString*)username password:(NSString*)password;
 
+- (void)addValue:(id)value forHTTPHeaderField:(NSString *)field;
+
 @end
