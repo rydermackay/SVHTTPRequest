@@ -254,9 +254,6 @@ typedef NSUInteger SVHTTPRequestState;
         return;
     }
     
-#if TARGET_OS_IPHONE
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-#endif
     
     if(self.operationParameters)
         [self addParametersToRequest:self.operationParameters];
@@ -385,10 +382,6 @@ typedef NSUInteger SVHTTPRequestState;
 
 - (void)callCompletionBlockWithResponse:(id)response error:(NSError *)error {
     self.timeoutTimer = nil;
-    
-#if TARGET_OS_IPHONE
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-#endif
     
     if(self.operationCompletionBlock && !self.isCancelled)
         self.operationCompletionBlock(response, self.operationURLResponse, error);
