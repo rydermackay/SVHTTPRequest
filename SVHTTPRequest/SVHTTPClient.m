@@ -165,8 +165,13 @@
             progress:(void (^)(float))progressBlock 
           completion:(void (^)(id, NSHTTPURLResponse*, NSError *))completionBlock  {
     
+    void (^completion)(id, NSHTTPURLResponse *, NSError *) = ^(id response, NSHTTPURLResponse *urlResponse, NSError *error)
+    {
+        [self operationDidFinishWithResponse:response urlResponse:urlResponse error:error completion:completionBlock];
+    };
+    
     NSString *completeURLString = [NSString stringWithFormat:@"%@%@", self.basePath, path];
-    SVHTTPRequest *requestOperation = [(id<SVHTTPRequestPrivateMethods>)[SVHTTPRequest alloc] initWithAddress:completeURLString method:method parameters:parameters saveToPath:savePath progress:progressBlock completion:completionBlock];
+    SVHTTPRequest *requestOperation = [(id<SVHTTPRequestPrivateMethods>)[SVHTTPRequest alloc] initWithAddress:completeURLString method:method parameters:parameters saveToPath:savePath progress:progressBlock completion:completion];
     requestOperation.sendParametersAsJSON = self.sendParametersAsJSON;
     requestOperation.cachePolicy = self.cachePolicy;
     requestOperation.userAgent = self.userAgent;
@@ -180,6 +185,12 @@
     
     [(id<SVHTTPRequestPrivateMethods>)requestOperation setRequestPath:path];
     [self.operationQueue addOperation:requestOperation];
+}
+
+- (void)operationDidFinishWithResponse:(id)response urlResponse:(NSHTTPURLResponse *)urlResponse error:(NSError *)error completion:(void (^)(id, NSHTTPURLResponse *, NSError *))completion
+{
+    if (completion)
+        completion(response, urlResponse, error);
 }
 
 @end

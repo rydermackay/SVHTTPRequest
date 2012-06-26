@@ -37,4 +37,13 @@
 @property (nonatomic, readwrite) BOOL sendParametersAsJSON;
 @property (nonatomic, readwrite) NSURLRequestCachePolicy cachePolicy;
 
+
+// hook for subclasses to override and process response
+// default implementation simply invokes completion block using parameters
+
+- (void)operationDidFinishWithResponse:(id)response
+                           urlResponse:(NSHTTPURLResponse *)urlResponse
+                                 error:(NSError *)error
+                            completion:(void (^)(id response, NSHTTPURLResponse *urlResponse, NSError *error))completion;
+
 @end
