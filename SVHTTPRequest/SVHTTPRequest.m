@@ -27,7 +27,7 @@ enum {
 
 typedef NSUInteger SVHTTPRequestState;
 
-@interface SVHTTPRequest ()
+@interface SVHTTPRequest () <NSURLConnectionDelegate>
 
 @property (nonatomic, strong) NSMutableURLRequest *operationRequest;
 @property (nonatomic, strong) NSMutableData *operationData;
@@ -389,6 +389,39 @@ typedef NSUInteger SVHTTPRequestState;
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
     [self callCompletionBlockWithResponse:nil error:error];
+}
+
+- (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+{
+    if ([self shouldTrustHostname:connection.currentRequest.URL.host])
+    {
+        NSURLCredential *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+        [challenge.sender useCredential:credential forAuthenticationChallenge:challenge];
+    }
+    
+    [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
+}
+
+/*
+ 
+ Checks Info.plist key SVHTTPRequestKnownHostnames to see if we should trust hosts with self-signed certificates (e.g. development or staging servers)
+ 
+ To use:
+    1. Add user-defined build setting SVHTTPRequestKnownHostnames, add comma-separated hosts to DEBUG and other test configurations (e.g. dev.example.com, staging.example.com)
+
+ *** FOR DEVELOPMENT BUILDS ONLY, DO *NOT* ADD HOSTS TO RELEASE CONFIGURATION ***
+ 
+    2. Make sure build setting "Expand Build Settings in Info.plist File" is YES
+    3. Add SVHTTPRequestKnownHostnames key with value ${SVHTTPRequestKnownHostnames} to Info.plist
+ 
+*/
+- (BOOL)shouldTrustHostname:(NSString *)hostname
+{
+    NSString *knownHostnames = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"SVHTTPRequestKnownHostnames"];
+    NSRange range = [knownHostnames rangeOfString:hostname];
+    BOOL shouldTrust = (range.length > 0);
+    
+    return shouldTrust;
 }
 
 - (void)callCompletionBlockWithResponse:(id)response error:(NSError *)error {
