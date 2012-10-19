@@ -306,7 +306,8 @@ typedef NSUInteger SVHTTPRequestState;
         return;
     
     [super cancel];
-    [self callCompletionBlockWithResponse:nil error:nil];
+    NSError *error = [NSError errorWithDomain:NSCocoaErrorDomain code:NSUserCancelledError userInfo:nil];
+    [self callCompletionBlockWithResponse:nil error:error];
 }
 
 - (BOOL)isConcurrent {
@@ -427,7 +428,7 @@ typedef NSUInteger SVHTTPRequestState;
 - (void)callCompletionBlockWithResponse:(id)response error:(NSError *)error {
     self.timeoutTimer = nil;
     
-    if(self.operationCompletionBlock && !self.isCancelled)
+    if(self.operationCompletionBlock)
         self.operationCompletionBlock(response, self.operationURLResponse, error);
     
     [self finish];
