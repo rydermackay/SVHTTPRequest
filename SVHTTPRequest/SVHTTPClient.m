@@ -14,7 +14,7 @@
 
 @property (nonatomic, strong) NSOperationQueue *operationQueue;
 
-- (void)queueRequest:(NSString*)path 
+- (SVHTTPRequest *)queueRequest:(NSString*)path 
               method:(SVHTTPRequestMethod)method 
           parameters:(NSDictionary*)parameters 
           saveToPath:(NSString*)savePath 
@@ -99,24 +99,24 @@
 
 #pragma mark - Request Methods
 
-- (void)GET:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(id, NSHTTPURLResponse*, NSError*))completionBlock {
-    [self queueRequest:path method:SVHTTPRequestMethodGET parameters:parameters saveToPath:nil progress:nil completion:completionBlock];
+- (SVHTTPRequest *)GET:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(id, NSHTTPURLResponse*, NSError*))completionBlock {
+    return [self queueRequest:path method:SVHTTPRequestMethodGET parameters:parameters saveToPath:nil progress:nil completion:completionBlock];
 }
 
-- (void)GET:(NSString *)path parameters:(NSDictionary *)parameters saveToPath:(NSString *)savePath progress:(void (^)(float))progressBlock completion:(void (^)(id, NSHTTPURLResponse*, NSError *))completionBlock {
-    [self queueRequest:path method:SVHTTPRequestMethodGET parameters:parameters saveToPath:savePath progress:progressBlock completion:completionBlock];
+- (SVHTTPRequest *)GET:(NSString *)path parameters:(NSDictionary *)parameters saveToPath:(NSString *)savePath progress:(void (^)(float))progressBlock completion:(void (^)(id, NSHTTPURLResponse*, NSError *))completionBlock {
+    return [self queueRequest:path method:SVHTTPRequestMethodGET parameters:parameters saveToPath:savePath progress:progressBlock completion:completionBlock];
 }
 
-- (void)POST:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(id, NSHTTPURLResponse*, NSError*))completionBlock {
-    [self queueRequest:path method:SVHTTPRequestMethodPOST parameters:parameters saveToPath:nil progress:nil completion:completionBlock];
+- (SVHTTPRequest *)POST:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(id, NSHTTPURLResponse*, NSError*))completionBlock {
+    return [self queueRequest:path method:SVHTTPRequestMethodPOST parameters:parameters saveToPath:nil progress:nil completion:completionBlock];
 }
 
-- (void)PUT:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(id, NSHTTPURLResponse*, NSError*))completionBlock {
-    [self queueRequest:path method:SVHTTPRequestMethodPUT parameters:parameters saveToPath:nil progress:nil completion:completionBlock];
+- (SVHTTPRequest *)PUT:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(id, NSHTTPURLResponse*, NSError*))completionBlock {
+    return [self queueRequest:path method:SVHTTPRequestMethodPUT parameters:parameters saveToPath:nil progress:nil completion:completionBlock];
 }
 
-- (void)DELETE:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(id, NSHTTPURLResponse*, NSError*))completionBlock {
-    [self queueRequest:path method:SVHTTPRequestMethodDELETE parameters:parameters saveToPath:nil progress:nil completion:completionBlock];
+- (SVHTTPRequest *)DELETE:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(id, NSHTTPURLResponse*, NSError*))completionBlock {
+    return [self queueRequest:path method:SVHTTPRequestMethodDELETE parameters:parameters saveToPath:nil progress:nil completion:completionBlock];
 }
 
 #pragma mark - Operation Cancelling
@@ -158,7 +158,7 @@
     [self.HTTPHeaderFields setValue:value forKey:field];
 }
 
-- (void)queueRequest:(NSString*)path 
+- (SVHTTPRequest *)queueRequest:(NSString*)path 
               method:(SVHTTPRequestMethod)method 
           parameters:(NSDictionary*)parameters 
           saveToPath:(NSString*)savePath 
@@ -185,6 +185,8 @@
     
     [(id<SVHTTPRequestPrivateMethods>)requestOperation setRequestPath:path];
     [self.operationQueue addOperation:requestOperation];
+    
+    return requestOperation;
 }
 
 - (void)operationDidFinishWithResponse:(id)response urlResponse:(NSHTTPURLResponse *)urlResponse error:(NSError *)error completion:(void (^)(id, NSHTTPURLResponse *, NSError *))completion
