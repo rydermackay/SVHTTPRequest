@@ -428,10 +428,10 @@ typedef NSUInteger SVHTTPRequestState;
 - (void)callCompletionBlockWithResponse:(id)response error:(NSError *)error {
     self.timeoutTimer = nil;
     
+    [self finish];
+    
     if(self.operationCompletionBlock)
         self.operationCompletionBlock(response, self.operationURLResponse, error);
-    
-    [self finish];
 }
 
 @end
